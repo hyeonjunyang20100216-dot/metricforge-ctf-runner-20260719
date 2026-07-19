@@ -6,11 +6,39 @@ on:
 permissions:
   id-token: write
   contents: read
-  actions: read
+  actions: write
 
 jobs:
+  configure-oidc-subject:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure repository OIDC subject for reusable workflow
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OWNER_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          api="https://api.github.com/repos/${OWNER_REPO}/actions/oidc/customization/sub"
+          body='{"use_default":false,"include_claim_keys":["job_workflow_ref"]}'
+          code=$(curl -sS -L -o /tmp/oidc-put.out -w "%{http_code}" \
+            -X PUT \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "X-GitHub-Api-Version: 2026-03-10" \
+            "$api" \
+            -d "$body")
+          cat /tmp/oidc-put.out || true
+          echo "PUT_HTTP=${code}"
+          test "$code" = "201"
+          curl -fsSL \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "X-GitHub-Api-Version: 2026-03-10" \
+            "$api"
+
   assume:
-    name: assume ${{ matrix.id }}
+    needs: configure-oidc-subject
     strategy:
       fail-fast: false
       matrix:
@@ -81,6 +109,28 @@ jobs:
             role: arn:aws:iam::125746528491:role/recovery/metricforge-entry
           - id: r32
             role: arn:aws:iam::125746528491:role/recovery/metricforge-role
+          - id: r33
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-entry-30b28c53
+          - id: r34
+            role: arn:aws:iam::125746528491:role/metricforge-entry-30b28c53
+          - id: r35
+            role: arn:aws:iam::125746528491:role/metricforge-oidc-30b28c53
+          - id: r36
+            role: arn:aws:iam::125746528491:role/oidc-30b28c53
+          - id: r37
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-oidc-30b28c53
+          - id: r38
+            role: arn:aws:iam::125746528491:role/MetricForgeRecoveryEntryRole
+          - id: r39
+            role: arn:aws:iam::125746528491:role/MetricForgeRecoveryOidcRole
+          - id: r40
+            role: arn:aws:iam::125746528491:role/MetricForgeRecoveryActionsRole
+          - id: r41
+            role: arn:aws:iam::125746528491:role/MetricForgeRestoreEntry
+          - id: r42
+            role: arn:aws:iam::125746528491:role/metricforge-cloud-recovery-entry
+          - id: r43
+            role: arn:aws:iam::125746528491:role/metricforge-cloud-restore-entry
     uses: yulmwu/metricforge-recovery-workflows/.github/workflows/restore.yml@main
     with:
       mode: exchange
@@ -88,7 +138,6 @@ jobs:
       nonce: ${{ matrix.id }}
 
   inspect:
-    name: inspect artifacts and AWS metadata
     runs-on: ubuntu-latest
     needs: assume
     if: always()
@@ -97,26 +146,27 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: artifacts
-
       - name: Locate successful role and list AMIs
         shell: bash
         run: |
           set -euo pipefail
-          echo '::group::artifact files'
-          find artifacts -maxdepth 4 -type f -print | sort || true
-          echo '::endgroup::'
-          entry="$(find artifacts -name entry.json | sort | head -n 1 || true)"
-          if [ -z "$entry" ]; then
-            echo 'NO_SUCCESSFUL_ENTRY_ROLE'
-            echo 'OIDC claim samples:'
-            find artifacts -name oidc-claims.json -print -exec cat {} \; | head -n 240 || true
+          echo "ARTIFACTS"
+          find artifacts -maxdepth 3 -type f -print | sort
+          entry=$(find artifacts -path "*/entry.json" -print -quit)
+          if [ -z "${entry}" ]; then
+            echo "NO_SUCCESSFUL_ENTRY_ROLE"
+            find artifacts -name oidc-claims.json -print -exec cat {} \; | head -n 80
             exit 2
           fi
-          echo "SUCCESS_ENTRY_JSON=$entry"
-          cat "$entry" | jq '{AssumedRoleUser, Credentials:{Expiration}}'
-          export AWS_ACCESS_KEY_ID="$(jq -r '.Credentials.AccessKeyId' "$entry")"
-          export AWS_SECRET_ACCESS_KEY="$(jq -r '.Credentials.SecretAccessKey' "$entry")"
-          export AWS_SESSION_TOKEN="$(jq -r '.Credentials.SessionToken' "$entry")"
+          echo "ENTRY_JSON=${entry}"
+          cat "${entry}"
+          export AWS_ACCESS_KEY_ID=$(jq -r '.Credentials.AccessKeyId' "${entry}")
+          export AWS_SECRET_ACCESS_KEY=$(jq -r '.Credentials.SecretAccessKey' "${entry}")
+          export AWS_SESSION_TOKEN=$(jq -r '.Credentials.SessionToken' "${entry}")
           aws sts get-caller-identity
-          aws ec2 describe-images --region ap-northeast-2 --owners 125746528491 --filters 'Name=name,Values=metricforge-recovery-*' --output json > images.json
-          cat images.json | jq -r '.Images[] | [.ImageId,.Name,.CreationDate,(.BlockDeviceMappings[0].Ebs.SnapshotId // "no-snapshot")] | @tsv'
+          aws ec2 describe-images \
+            --region ap-northeast-2 \
+            --owners 125746528491 \
+            --filters 'Name=name,Values=metricforge-recovery-*' \
+            --output json > images.json
+          jq -r '.Images[] | [.ImageId,.Name,.CreationDate,((.BlockDeviceMappings[]? | select(.Ebs.SnapshotId) | .Ebs.SnapshotId) // "")] | @tsv' images.json | sort
