@@ -81,7 +81,6 @@ jobs:
             role: arn:aws:iam::125746528491:role/recovery/metricforge-entry
           - id: r32
             role: arn:aws:iam::125746528491:role/recovery/metricforge-role
-    continue-on-error: true
     uses: yulmwu/metricforge-recovery-workflows/.github/workflows/restore.yml@main
     with:
       mode: exchange
