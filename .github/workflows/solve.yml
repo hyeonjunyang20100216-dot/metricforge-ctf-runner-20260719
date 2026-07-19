@@ -2,11 +2,6 @@ name: metricforge probe
 
 on:
   workflow_dispatch:
-    inputs:
-      batch:
-        description: Candidate batch index
-        required: false
-        default: "0"
 
 permissions:
   id-token: write
@@ -36,59 +31,458 @@ jobs:
           cat /tmp/oidc-put.out || true
           echo "PUT_HTTP=${code}"
           test "$code" = "201"
-          curl -fsSL \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${GH_TOKEN}" \
-            -H "X-GitHub-Api-Version: 2026-03-10" \
-            "$api"
 
-  plan-candidates:
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.plan.outputs.matrix }}
-    steps:
-      - id: plan
-        shell: bash
-        env:
-          BATCH: ${{ github.event.inputs.batch || '0' }}
-        run: |
-          python3 - <<'PY'
-          import json, os
-          account = "125746528491"
-          batch = int(os.environ.get("BATCH") or "0")
-          batch_size = 240
-          names = ["swua-metricforge-recovery","swua-metricforge-recovery-entry","metricforge-recovery-20260613","metricforge-recovery-2026-06-13","metricforge-recovery-20260417","metricforge-recovery-2026-04-17","mf-ir-2026-0417","metricforge-ir-2026-0417","metricforge-recovery-0417","metricforge-recovery-30b28c53","metricforge-restore-30b28c53","metricforge-30b28c53","mf-recovery-30b28c53","github-actions-30b28c53","github-actions-terraform-30b28c53","recovery-30b28c53","restore-30b28c53","MetricForgeRecoveryAccessRole","MetricForgeRecoveryReaderRole","MetricForgeRecoveryReadonlyRole","MetricForgeRecoveryGitHubOIDCRole","MetricForgeRecoveryGithubOidcRole","MetricForgeRecoveryGithubActionsRole","MetricForgeGithubOidcRole","MetricForgeGitHubOIDCRole","MetricForgeGithubActionsRole","MetricForgeActionsRole","MetricForgeOIDCRole","MetricForgeEntryRole","MetricForgeReaderRole","MetricForgeEvidenceReaderRole","MetricForgeSnapshotReaderRole","MetricForgeAmiReaderRole","MetricForgeForensicsReaderRole","MetricForgeIrReaderRole","MetricForgeIncidentResponseRole","MetricForgeRecoveryBridgeRole","MetricForgeRecoveryBrokerRole","MetricForgeRecoveryPipelineRole","GitHubActionsTerraform","GithubActionsTerraform","GitHubActionsMetricForgeRecovery","GitHubActionsRecovery","GithubActionsRecovery","OIDC30b28c53","MetricForge30b28c53","yulmwu-metricforge-recovery","metricforge-yulmwu-recovery","metricforge-recovery-yulmwu","yulmwu-metricforge-oidc","yulmwu-github-actions-terraform","service-role/github-actions-terraform","github-actions/github-actions-terraform","oidc/github-actions-terraform","service-role/github-actions-recovery","github-actions/github-actions-recovery","oidc/github-actions-recovery","service-role/github-actions-restore","github-actions/github-actions-restore","oidc/github-actions-restore","service-role/github-actions-metricforge-recovery","github-actions/github-actions-metricforge-recovery","oidc/github-actions-metricforge-recovery","service-role/github-actions-metricforge-restore","github-actions/github-actions-metricforge-restore","oidc/github-actions-metricforge-restore","service-role/metricforge-recovery-entry","github-actions/metricforge-recovery-entry","oidc/metricforge-recovery-entry","service-role/metricforge-restore-entry","github-actions/metricforge-restore-entry","oidc/metricforge-restore-entry","service-role/metricforge-github-actions","github-actions/metricforge-github-actions","oidc/metricforge-github-actions","service-role/metricforge-github-oidc","github-actions/metricforge-github-oidc","oidc/metricforge-github-oidc","service-role/metricforge-recovery-reader","github-actions/metricforge-recovery-reader","oidc/metricforge-recovery-reader","service-role/metricforge-evidence-reader","github-actions/metricforge-evidence-reader","oidc/metricforge-evidence-reader","service-role/metricforge-snapshot-reader","github-actions/metricforge-snapshot-reader","oidc/metricforge-snapshot-reader","service-role/metricforge-ami-reader","github-actions/metricforge-ami-reader","oidc/metricforge-ami-reader","service-role/metricforge-recovery-pipeline","github-actions/metricforge-recovery-pipeline","oidc/metricforge-recovery-pipeline","service-role/mf-recovery-entry","github-actions/mf-recovery-entry","oidc/mf-recovery-entry","service-role/MetricForgeRecoveryEntryRole","github-actions/MetricForgeRecoveryEntryRole","oidc/MetricForgeRecoveryEntryRole","service-role/GitHubActionsTerraform","github-actions/GitHubActionsTerraform","oidc/GitHubActionsTerraform","metricforge/entry","metricforge/entry-role","metricforge/role","metricforge/reader","metricforge/readonly","metricforge/read-only","metricforge/access","metricforge/github-actions","metricforge/oidc","metricforge/workflow","metricforge/workflows","metricforge/pipeline","metricforge/restore","metricforge/recovery","metricforge/evidence-reader","metricforge/snapshot-reader","metricforge/ami-reader","metricforge/forensics","metricforge/ir","metricforge/analyst","metricforge/auditor","metricforge/investigator","metricforge/recovery/entry","metricforge/recovery/entry-role","metricforge/recovery/role","metricforge/recovery/reader","metricforge/recovery/readonly","metricforge/recovery/read-only","metricforge/recovery/access","metricforge/recovery/github-actions","metricforge/recovery/github-oidc","metricforge/recovery/oidc","metricforge/recovery/workflow","metricforge/recovery/workflows","metricforge/recovery/pipeline","metricforge/recovery/restore","metricforge/recovery/recovery","metricforge/recovery/evidence-reader","metricforge/recovery/snapshot-reader","metricforge/recovery/ami-reader","metricforge/recovery/forensics","metricforge/recovery/ir","metricforge/recovery/analyst","metricforge/recovery/auditor","metricforge/recovery/investigator","metricforge/restore/entry","metricforge/restore/entry-role","metricforge/restore/role","metricforge/restore/reader","metricforge/restore/readonly","metricforge/restore/read-only","metricforge/restore/access","metricforge/restore/github-actions","metricforge/restore/github-oidc","metricforge/restore/oidc","metricforge/restore/workflow","metricforge/restore/workflows","metricforge/restore/pipeline","metricforge/restore/restore","metricforge/restore/recovery","metricforge/restore/evidence-reader","metricforge/restore/snapshot-reader","metricforge/restore/ami-reader","metricforge/restore/forensics","metricforge/restore/ir","metricforge/restore/analyst","metricforge/restore/auditor","metricforge/restore/investigator","metricforge/ir/entry","metricforge/ir/entry-role","metricforge/ir/role","metricforge/ir/reader","metricforge/ir/readonly","metricforge/ir/read-only","metricforge/ir/access","metricforge/ir/github-actions","metricforge/ir/github-oidc","metricforge/ir/oidc","metricforge/ir/workflow","metricforge/ir/workflows","metricforge/ir/pipeline","metricforge/ir/restore","metricforge/ir/recovery","metricforge/ir/evidence-reader","metricforge/ir/snapshot-reader","metricforge/ir/ami-reader","metricforge/ir/forensics","metricforge/ir/ir","metricforge/ir/analyst","metricforge/ir/auditor","metricforge/ir/investigator","metricforge/forensics/entry","metricforge/forensics/entry-role","metricforge/forensics/role","metricforge/forensics/reader","metricforge/forensics/readonly","metricforge/forensics/read-only","metricforge/forensics/access","metricforge/forensics/github-actions","metricforge/forensics/github-oidc","metricforge/forensics/oidc","metricforge/forensics/workflow","metricforge/forensics/workflows","metricforge/forensics/pipeline","metricforge/forensics/restore","metricforge/forensics/recovery","metricforge/forensics/evidence-reader","metricforge/forensics/snapshot-reader","metricforge/forensics/ami-reader","metricforge/forensics/forensics","metricforge/forensics/ir","metricforge/forensics/analyst","metricforge/forensics/auditor","metricforge/forensics/investigator","metricforge/evidence/entry","metricforge/evidence/entry-role","metricforge/evidence/role","metricforge/evidence/reader","metricforge/evidence/readonly","metricforge/evidence/read-only","metricforge/evidence/access","metricforge/evidence/github-actions","metricforge/evidence/github-oidc","metricforge/evidence/oidc","metricforge/evidence/workflow","metricforge/evidence/workflows","metricforge/evidence/pipeline","metricforge/evidence/restore","metricforge/evidence/recovery","metricforge/evidence/evidence-reader","metricforge/evidence/snapshot-reader","metricforge/evidence/ami-reader","metricforge/evidence/forensics","metricforge/evidence/ir","metricforge/evidence/analyst","metricforge/evidence/auditor","metricforge/evidence/investigator","metricforge/pipeline/entry","metricforge/pipeline/entry-role","metricforge/pipeline/role","metricforge/pipeline/reader","metricforge/pipeline/readonly","metricforge/pipeline/read-only","metricforge/pipeline/access","metricforge/pipeline/github-actions","metricforge/pipeline/github-oidc","metricforge/pipeline/oidc","metricforge/pipeline/workflow","metricforge/pipeline/workflows","metricforge/pipeline/pipeline","metricforge/pipeline/restore","metricforge/pipeline/recovery","metricforge/pipeline/evidence-reader","metricforge/pipeline/snapshot-reader","metricforge/pipeline/ami-reader","metricforge/pipeline/forensics","metricforge/pipeline/ir","metricforge/pipeline/analyst","metricforge/pipeline/auditor","metricforge/pipeline/investigator","recovery/entry","recovery/entry-role","recovery/role","recovery/reader","recovery/readonly","recovery/read-only","recovery/access","recovery/github-actions","recovery/github-oidc","recovery/oidc","recovery/workflow","recovery/workflows","recovery/pipeline","recovery/restore","recovery/recovery","recovery/evidence-reader","recovery/snapshot-reader","recovery/ami-reader","recovery/forensics","recovery/ir","recovery/analyst","recovery/auditor","recovery/investigator","restore/entry","restore/entry-role","restore/role","restore/reader","restore/readonly","restore/read-only","restore/access","restore/github-actions","restore/github-oidc","restore/oidc","restore/workflow","restore/workflows","restore/pipeline","restore/restore","restore/recovery","restore/evidence-reader","restore/snapshot-reader","restore/ami-reader","restore/forensics","restore/ir","restore/analyst","restore/auditor","restore/investigator","github-actions/entry","github-actions/entry-role","github-actions/role","github-actions/reader","github-actions/readonly","github-actions/read-only","github-actions/access","github-actions/github-actions","github-actions/github-oidc","github-actions/oidc","github-actions/workflow","github-actions/workflows","github-actions/pipeline","github-actions/restore","github-actions/recovery","github-actions/evidence-reader","github-actions/snapshot-reader","github-actions/ami-reader","github-actions/forensics","github-actions/ir","github-actions/analyst","github-actions/auditor","github-actions/investigator","oidc/entry","oidc/entry-role","oidc/role","oidc/reader","oidc/readonly","oidc/read-only","oidc/access","oidc/github-actions","oidc/github-oidc","oidc/oidc","oidc/workflow","oidc/workflows","oidc/pipeline","oidc/restore","oidc/recovery","oidc/evidence-reader","oidc/snapshot-reader","oidc/ami-reader","oidc/forensics","oidc/ir","oidc/analyst","oidc/auditor","oidc/investigator","external/entry","external/entry-role","external/role","external/reader","external/readonly","external/read-only","external/access","external/github-actions","external/github-oidc","external/oidc","external/workflow","external/workflows","external/pipeline","external/restore","external/recovery","external/evidence-reader","external/snapshot-reader","external/ami-reader","external/forensics","external/ir","external/analyst","external/auditor","external/investigator","vendor/entry","vendor/entry-role","vendor/role","vendor/reader","vendor/readonly","vendor/read-only","vendor/access","vendor/github-actions","vendor/github-oidc","vendor/oidc","vendor/workflow","vendor/workflows","vendor/pipeline","vendor/restore","vendor/recovery","vendor/evidence-reader","vendor/snapshot-reader","vendor/ami-reader","vendor/forensics","vendor/ir","vendor/analyst","vendor/auditor","vendor/investigator","contractor/entry","contractor/entry-role","contractor/role","contractor/reader","contractor/readonly","contractor/read-only","contractor/access","contractor/github-actions","contractor/github-oidc","contractor/oidc","contractor/workflow","contractor/workflows","contractor/pipeline","contractor/restore","contractor/recovery","contractor/evidence-reader","contractor/snapshot-reader","contractor/ami-reader","contractor/forensics","contractor/ir","contractor/analyst","contractor/auditor","contractor/investigator","metricforge-recovery-read-only","metricforge-recovery-read","metricforge-recovery-investigator","metricforge-recovery-contractor","metricforge-recovery-reviewer","metricforge-recovery-github-oidc","metricforge-recovery-github-actions","metricforge-recovery-github-actions-role","metricforge-recovery-actions-role","metricforge-recovery-federated","metricforge-recovery-session","metricforge-recovery-exchange","metricforge-recovery-entrypoint","metricforge-recovery-restore-role","metricforge-recovery-recovery-role","metricforge-restore-read-only","metricforge-restore-read","metricforge-restore-auditor","metricforge-restore-investigator","metricforge-restore-partner","metricforge-restore-contractor","metricforge-restore-reviewer","metricforge-restore-workflow","metricforge-restore-workflows","metricforge-restore-oidc","metricforge-restore-github-oidc","metricforge-restore-github-actions","metricforge-restore-github-actions-role","metricforge-restore-actions-role","metricforge-restore-web-identity","metricforge-restore-sts","metricforge-restore-federation","metricforge-restore-federated","metricforge-restore-session","metricforge-restore-exchange","metricforge-restore-entrypoint","metricforge-restore-restore-role","metricforge-restore-recovery-role","metricforge-retired-recovery","metricforge-retired-recovery-entry","metricforge-retired-recovery-role","metricforge-retired-recovery-entry-role","metricforge-retired-recovery-access","metricforge-retired-recovery-reader","metricforge-retired-recovery-readonly","metricforge-retired-recovery-read-only","metricforge-retired-recovery-read","metricforge-retired-recovery-auditor","metricforge-retired-recovery-analyst","metricforge-retired-recovery-investigator","metricforge-retired-recovery-operator","metricforge-retired-recovery-external","metricforge-retired-recovery-vendor","metricforge-retired-recovery-partner","metricforge-retired-recovery-contractor","metricforge-retired-recovery-reviewer","metricforge-retired-recovery-pipeline","metricforge-retired-recovery-workflow","metricforge-retired-recovery-workflows","metricforge-retired-recovery-oidc","metricforge-retired-recovery-github-oidc","metricforge-retired-recovery-github-actions","metricforge-retired-recovery-github-actions-role","metricforge-retired-recovery-actions-role","metricforge-retired-recovery-web-identity","metricforge-retired-recovery-sts","metricforge-retired-recovery-bridge","metricforge-retired-recovery-broker","metricforge-retired-recovery-federation","metricforge-retired-recovery-federated","metricforge-retired-recovery-session","metricforge-retired-recovery-exchange","metricforge-retired-recovery-entrypoint","metricforge-retired-recovery-restore-role","metricforge-retired-recovery-recovery-role","metricforge-retired-restore","metricforge-retired-restore-entry","metricforge-retired-restore-role","metricforge-retired-restore-entry-role","metricforge-retired-restore-access","metricforge-retired-restore-reader","metricforge-retired-restore-readonly","metricforge-retired-restore-read-only","metricforge-retired-restore-read","metricforge-retired-restore-auditor","metricforge-retired-restore-analyst","metricforge-retired-restore-investigator","metricforge-retired-restore-operator","metricforge-retired-restore-external","metricforge-retired-restore-vendor","metricforge-retired-restore-partner","metricforge-retired-restore-contractor","metricforge-retired-restore-reviewer","metricforge-retired-restore-pipeline","metricforge-retired-restore-workflow","metricforge-retired-restore-workflows","metricforge-retired-restore-oidc","metricforge-retired-restore-github-oidc","metricforge-retired-restore-github-actions","metricforge-retired-restore-github-actions-role","metricforge-retired-restore-actions-role","metricforge-retired-restore-web-identity","metricforge-retired-restore-sts","metricforge-retired-restore-bridge","metricforge-retired-restore-broker","metricforge-retired-restore-federation","metricforge-retired-restore-federated","metricforge-retired-restore-session","metricforge-retired-restore-exchange","metricforge-retired-restore-entrypoint","metricforge-retired-restore-restore-role","metricforge-retired-restore-recovery-role","metricforge-legacy-recovery","metricforge-legacy-recovery-entry","metricforge-legacy-recovery-role","metricforge-legacy-recovery-entry-role","metricforge-legacy-recovery-access","metricforge-legacy-recovery-reader","metricforge-legacy-recovery-readonly","metricforge-legacy-recovery-read-only","metricforge-legacy-recovery-read","metricforge-legacy-recovery-auditor","metricforge-legacy-recovery-analyst","metricforge-legacy-recovery-investigator","metricforge-legacy-recovery-operator","metricforge-legacy-recovery-external","metricforge-legacy-recovery-vendor","metricforge-legacy-recovery-partner","metricforge-legacy-recovery-contractor","metricforge-legacy-recovery-reviewer","metricforge-legacy-recovery-pipeline","metricforge-legacy-recovery-workflow","metricforge-legacy-recovery-workflows","metricforge-legacy-recovery-oidc","metricforge-legacy-recovery-github-oidc","metricforge-legacy-recovery-github-actions","metricforge-legacy-recovery-github-actions-role","metricforge-legacy-recovery-actions-role","metricforge-legacy-recovery-web-identity","metricforge-legacy-recovery-sts","metricforge-legacy-recovery-bridge","metricforge-legacy-recovery-broker","metricforge-legacy-recovery-federation","metricforge-legacy-recovery-federated","metricforge-legacy-recovery-session","metricforge-legacy-recovery-exchange","metricforge-legacy-recovery-entrypoint","metricforge-legacy-recovery-restore-role","metricforge-legacy-recovery-recovery-role","metricforge-legacy-restore","metricforge-legacy-restore-entry","metricforge-legacy-restore-role","metricforge-legacy-restore-entry-role","metricforge-legacy-restore-access","metricforge-legacy-restore-reader","metricforge-legacy-restore-readonly","metricforge-legacy-restore-read-only","metricforge-legacy-restore-read","metricforge-legacy-restore-auditor","metricforge-legacy-restore-analyst","metricforge-legacy-restore-investigator","metricforge-legacy-restore-operator","metricforge-legacy-restore-external","metricforge-legacy-restore-vendor","metricforge-legacy-restore-partner","metricforge-legacy-restore-contractor","metricforge-legacy-restore-reviewer","metricforge-legacy-restore-pipeline","metricforge-legacy-restore-workflow","metricforge-legacy-restore-workflows","metricforge-legacy-restore-oidc","metricforge-legacy-restore-github-oidc","metricforge-legacy-restore-github-actions","metricforge-legacy-restore-github-actions-role","metricforge-legacy-restore-actions-role","metricforge-legacy-restore-web-identity","metricforge-legacy-restore-sts","metricforge-legacy-restore-bridge","metricforge-legacy-restore-broker","metricforge-legacy-restore-federation","metricforge-legacy-restore-federated","metricforge-legacy-restore-session","metricforge-legacy-restore-exchange","metricforge-legacy-restore-entrypoint","metricforge-legacy-restore-restore-role","metricforge-legacy-restore-recovery-role","metricforge-cloud-recovery","metricforge-cloud-recovery-role","metricforge-cloud-recovery-entry-role","metricforge-cloud-recovery-access","metricforge-cloud-recovery-reader","metricforge-cloud-recovery-readonly","metricforge-cloud-recovery-read-only","metricforge-cloud-recovery-read","metricforge-cloud-recovery-auditor","metricforge-cloud-recovery-analyst","metricforge-cloud-recovery-investigator","metricforge-cloud-recovery-operator","metricforge-cloud-recovery-external","metricforge-cloud-recovery-vendor","metricforge-cloud-recovery-partner","metricforge-cloud-recovery-contractor","metricforge-cloud-recovery-reviewer","metricforge-cloud-recovery-pipeline","metricforge-cloud-recovery-workflow","metricforge-cloud-recovery-workflows","metricforge-cloud-recovery-oidc","metricforge-cloud-recovery-github-oidc","metricforge-cloud-recovery-github-actions","metricforge-cloud-recovery-github-actions-role","metricforge-cloud-recovery-actions-role","metricforge-cloud-recovery-web-identity","metricforge-cloud-recovery-sts","metricforge-cloud-recovery-bridge","metricforge-cloud-recovery-broker","metricforge-cloud-recovery-federation","metricforge-cloud-recovery-federated","metricforge-cloud-recovery-session","metricforge-cloud-recovery-exchange","metricforge-cloud-recovery-entrypoint","metricforge-cloud-recovery-restore-role","metricforge-cloud-recovery-recovery-role","metricforge-cloud-restore","metricforge-cloud-restore-role","metricforge-cloud-restore-entry-role","metricforge-cloud-restore-access","metricforge-cloud-restore-reader","metricforge-cloud-restore-readonly","metricforge-cloud-restore-read-only","metricforge-cloud-restore-read","metricforge-cloud-restore-auditor","metricforge-cloud-restore-analyst","metricforge-cloud-restore-investigator","metricforge-cloud-restore-operator","metricforge-cloud-restore-external","metricforge-cloud-restore-vendor","metricforge-cloud-restore-partner","metricforge-cloud-restore-contractor","metricforge-cloud-restore-reviewer","metricforge-cloud-restore-pipeline","metricforge-cloud-restore-workflow","metricforge-cloud-restore-workflows","metricforge-cloud-restore-oidc","metricforge-cloud-restore-github-oidc","metricforge-cloud-restore-github-actions","metricforge-cloud-restore-github-actions-role","metricforge-cloud-restore-actions-role","metricforge-cloud-restore-web-identity","metricforge-cloud-restore-sts","metricforge-cloud-restore-bridge","metricforge-cloud-restore-broker","metricforge-cloud-restore-federation","metricforge-cloud-restore-federated","metricforge-cloud-restore-session","metricforge-cloud-restore-exchange","metricforge-cloud-restore-entrypoint","metricforge-cloud-restore-restore-role","metricforge-cloud-restore-recovery-role","metricforge-disaster-recovery-role","metricforge-disaster-recovery-entry-role","metricforge-disaster-recovery-access","metricforge-disaster-recovery-reader","metricforge-disaster-recovery-readonly","metricforge-disaster-recovery-read-only","metricforge-disaster-recovery-read","metricforge-disaster-recovery-auditor","metricforge-disaster-recovery-analyst","metricforge-disaster-recovery-investigator","metricforge-disaster-recovery-operator","metricforge-disaster-recovery-external","metricforge-disaster-recovery-vendor","metricforge-disaster-recovery-partner","metricforge-disaster-recovery-contractor","metricforge-disaster-recovery-reviewer","metricforge-disaster-recovery-pipeline","metricforge-disaster-recovery-workflow","metricforge-disaster-recovery-workflows","metricforge-disaster-recovery-oidc","metricforge-disaster-recovery-github-oidc","metricforge-disaster-recovery-github-actions","metricforge-disaster-recovery-github-actions-role","metricforge-disaster-recovery-actions-role","metricforge-disaster-recovery-web-identity","metricforge-disaster-recovery-sts","metricforge-disaster-recovery-bridge","metricforge-disaster-recovery-broker","metricforge-disaster-recovery-federation","metricforge-disaster-recovery-federated","metricforge-disaster-recovery-session","metricforge-disaster-recovery-exchange","metricforge-disaster-recovery-entrypoint","metricforge-disaster-recovery-restore-role","metricforge-disaster-recovery-recovery-role","metricforge-incident-response-entry-role","metricforge-incident-response-access","metricforge-incident-response-readonly","metricforge-incident-response-read-only","metricforge-incident-response-read","metricforge-incident-response-auditor","metricforge-incident-response-analyst","metricforge-incident-response-investigator","metricforge-incident-response-operator","metricforge-incident-response-external","metricforge-incident-response-vendor","metricforge-incident-response-partner","metricforge-incident-response-contractor","metricforge-incident-response-reviewer","metricforge-incident-response-pipeline","metricforge-incident-response-workflow","metricforge-incident-response-workflows","metricforge-incident-response-oidc","metricforge-incident-response-github-oidc","metricforge-incident-response-github-actions","metricforge-incident-response-github-actions-role","metricforge-incident-response-actions-role","metricforge-incident-response-web-identity","metricforge-incident-response-sts","metricforge-incident-response-bridge","metricforge-incident-response-broker","metricforge-incident-response-federation","metricforge-incident-response-federated","metricforge-incident-response-session","metricforge-incident-response-exchange","metricforge-incident-response-entrypoint","metricforge-incident-response-restore-role","metricforge-incident-response-recovery-role","metricforge-ir-entry-role","metricforge-ir-access","metricforge-ir-read-only","metricforge-ir-read","metricforge-ir-auditor","metricforge-ir-analyst","metricforge-ir-investigator","metricforge-ir-operator","metricforge-ir-external","metricforge-ir-vendor","metricforge-ir-partner","metricforge-ir-contractor","metricforge-ir-reviewer","metricforge-ir-pipeline","metricforge-ir-workflow","metricforge-ir-workflows","metricforge-ir-oidc","metricforge-ir-github-oidc","metricforge-ir-github-actions","metricforge-ir-github-actions-role","metricforge-ir-actions-role","metricforge-ir-web-identity","metricforge-ir-sts","metricforge-ir-bridge","metricforge-ir-broker","metricforge-ir-federation","metricforge-ir-federated","metricforge-ir-session","metricforge-ir-exchange","metricforge-ir-entrypoint","metricforge-ir-restore-role","metricforge-ir-recovery-role","metricforge-forensics-entry-role","metricforge-forensics-access","metricforge-forensics-read-only","metricforge-forensics-read","metricforge-forensics-auditor","metricforge-forensics-analyst","metricforge-forensics-investigator","metricforge-forensics-operator","metricforge-forensics-external","metricforge-forensics-vendor","metricforge-forensics-partner","metricforge-forensics-contractor","metricforge-forensics-reviewer","metricforge-forensics-pipeline","metricforge-forensics-workflow","metricforge-forensics-workflows","metricforge-forensics-oidc","metricforge-forensics-github-oidc","metricforge-forensics-github-actions","metricforge-forensics-github-actions-role","metricforge-forensics-actions-role","metricforge-forensics-web-identity","metricforge-forensics-sts","metricforge-forensics-bridge","metricforge-forensics-broker","metricforge-forensics-federation","metricforge-forensics-federated","metricforge-forensics-session","metricforge-forensics-exchange","metricforge-forensics-entrypoint","metricforge-forensics-restore-role","metricforge-forensics-recovery-role","metricforge-evidence-entry-role","metricforge-evidence-access","metricforge-evidence-read-only","metricforge-evidence-read","metricforge-evidence-auditor","metricforge-evidence-analyst","metricforge-evidence-investigator","metricforge-evidence-operator","metricforge-evidence-external","metricforge-evidence-vendor","metricforge-evidence-partner","metricforge-evidence-contractor","metricforge-evidence-reviewer","metricforge-evidence-pipeline","metricforge-evidence-workflow","metricforge-evidence-workflows","metricforge-evidence-oidc","metricforge-evidence-github-oidc","metricforge-evidence-github-actions","metricforge-evidence-github-actions-role","metricforge-evidence-actions-role","metricforge-evidence-web-identity","metricforge-evidence-sts","metricforge-evidence-bridge","metricforge-evidence-broker","metricforge-evidence-federation","metricforge-evidence-federated","metricforge-evidence-session","metricforge-evidence-exchange","metricforge-evidence-entrypoint","metricforge-evidence-restore-role","metricforge-evidence-recovery-role","metricforge-snapshot","metricforge-snapshot-entry","metricforge-snapshot-role","metricforge-snapshot-entry-role","metricforge-snapshot-access","metricforge-snapshot-read-only","metricforge-snapshot-read","metricforge-snapshot-auditor","metricforge-snapshot-analyst","metricforge-snapshot-investigator","metricforge-snapshot-operator","metricforge-snapshot-external","metricforge-snapshot-vendor","metricforge-snapshot-partner","metricforge-snapshot-contractor","metricforge-snapshot-reviewer","metricforge-snapshot-pipeline","metricforge-snapshot-workflow","metricforge-snapshot-workflows","metricforge-snapshot-oidc","metricforge-snapshot-github-oidc","metricforge-snapshot-github-actions","metricforge-snapshot-github-actions-role","metricforge-snapshot-actions-role","metricforge-snapshot-web-identity","metricforge-snapshot-sts","metricforge-snapshot-bridge","metricforge-snapshot-broker","metricforge-snapshot-federation","metricforge-snapshot-federated","metricforge-snapshot-session","metricforge-snapshot-exchange","metricforge-snapshot-entrypoint","metricforge-snapshot-restore-role","metricforge-snapshot-recovery-role","metricforge-ami","metricforge-ami-entry","metricforge-ami-role","metricforge-ami-entry-role","metricforge-ami-access","metricforge-ami-read-only","metricforge-ami-read","metricforge-ami-auditor","metricforge-ami-analyst","metricforge-ami-investigator","metricforge-ami-operator","metricforge-ami-external","metricforge-ami-vendor","metricforge-ami-partner","metricforge-ami-contractor","metricforge-ami-reviewer","metricforge-ami-pipeline","metricforge-ami-workflow","metricforge-ami-workflows","metricforge-ami-oidc","metricforge-ami-github-oidc","metricforge-ami-github-actions","metricforge-ami-github-actions-role","metricforge-ami-actions-role","metricforge-ami-web-identity","metricforge-ami-sts","metricforge-ami-bridge","metricforge-ami-broker","metricforge-ami-federation","metricforge-ami-federated","metricforge-ami-session","metricforge-ami-exchange","metricforge-ami-entrypoint","metricforge-ami-restore-role","metricforge-ami-recovery-role","metricforge-legal-review","metricforge-legal-review-entry","metricforge-legal-review-role","metricforge-legal-review-entry-role","metricforge-legal-review-access","metricforge-legal-review-reader","metricforge-legal-review-readonly","metricforge-legal-review-read-only","metricforge-legal-review-read","metricforge-legal-review-auditor","metricforge-legal-review-analyst","metricforge-legal-review-investigator","metricforge-legal-review-operator","metricforge-legal-review-external","metricforge-legal-review-vendor","metricforge-legal-review-partner","metricforge-legal-review-contractor","metricforge-legal-review-reviewer","metricforge-legal-review-pipeline","metricforge-legal-review-workflow","metricforge-legal-review-workflows","metricforge-legal-review-oidc","metricforge-legal-review-github-oidc","metricforge-legal-review-github-actions","metricforge-legal-review-github-actions-role","metricforge-legal-review-actions-role","metricforge-legal-review-web-identity","metricforge-legal-review-sts","metricforge-legal-review-bridge","metricforge-legal-review-broker","metricforge-legal-review-federation","metricforge-legal-review-federated","metricforge-legal-review-session","metricforge-legal-review-exchange","metricforge-legal-review-entrypoint","metricforge-legal-review-restore-role","metricforge-legal-review-recovery-role","metricforge-secure-file-gateway","metricforge-secure-file-gateway-entry","metricforge-secure-file-gateway-role","metricforge-secure-file-gateway-entry-role","metricforge-secure-file-gateway-access","metricforge-secure-file-gateway-reader","metricforge-secure-file-gateway-readonly","metricforge-secure-file-gateway-read-only"]
-          start = batch * batch_size
-          selected = names[start:start + batch_size]
-          if not selected:
-              raise SystemExit(f"empty batch {batch}; total candidates={len(names)}")
-          matrix = {"include": [
-              {"id": f"b{batch:02d}_{i:03d}", "role": f"arn:aws:iam::{account}:role/{name}"}
-              for i, name in enumerate(selected)
-          ]}
-          print(f"batch={batch} start={start} count={len(selected)} total={len(names)}")
-          for item in matrix["include"]:
-              print(item["id"], item["role"])
-          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
-              fh.write("matrix<<EOF\n")
-              fh.write(json.dumps(matrix, separators=(",", ":")))
-              fh.write("\nEOF\n")
-          PY
-
-  assume:
-    needs: [configure-oidc-subject, plan-candidates]
+  assume_main:
+    needs: configure-oidc-subject
     strategy:
       fail-fast: false
-      matrix: ${{ fromJSON(needs.plan-candidates.outputs.matrix) }}
+      matrix:
+        include:
+          - id: t000
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-entry
+          - id: t001
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-role
+          - id: t002
+            role: arn:aws:iam::125746528491:role/metricforge-recovery
+          - id: t003
+            role: arn:aws:iam::125746528491:role/metricforge-restore-entry
+          - id: t004
+            role: arn:aws:iam::125746528491:role/metricforge-restore-role
+          - id: t005
+            role: arn:aws:iam::125746528491:role/metricforge-restore
+          - id: t006
+            role: arn:aws:iam::125746528491:role/metricforge-entry
+          - id: t007
+            role: arn:aws:iam::125746528491:role/metricforge-role
+          - id: t008
+            role: arn:aws:iam::125746528491:role/metricforge-entry-role
+          - id: t009
+            role: arn:aws:iam::125746528491:role/metricforge-entryrole
+          - id: t010
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-workflow
+          - id: t011
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-workflows
+          - id: t012
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-workflow-role
+          - id: t013
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-workflows-role
+          - id: t014
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-workflow-entry
+          - id: t015
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-workflows-entry
+          - id: t016
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-workflow-entry-role
+          - id: t017
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-workflows-entry-role
+          - id: t018
+            role: arn:aws:iam::125746528491:role/metricforge-restore-workflow
+          - id: t019
+            role: arn:aws:iam::125746528491:role/metricforge-restore-workflows
+          - id: t020
+            role: arn:aws:iam::125746528491:role/metricforge-restore-workflow-role
+          - id: t021
+            role: arn:aws:iam::125746528491:role/metricforge-restore-workflows-role
+          - id: t022
+            role: arn:aws:iam::125746528491:role/metricforge-restore-workflow-entry
+          - id: t023
+            role: arn:aws:iam::125746528491:role/metricforge-restore-workflows-entry
+          - id: t024
+            role: arn:aws:iam::125746528491:role/metricforge-restore-workflow-entry-role
+          - id: t025
+            role: arn:aws:iam::125746528491:role/metricforge-restore-workflows-entry-role
+          - id: t026
+            role: arn:aws:iam::125746528491:role/metricforge-github-oidc
+          - id: t027
+            role: arn:aws:iam::125746528491:role/metricforge-github-oidc-role
+          - id: t028
+            role: arn:aws:iam::125746528491:role/metricforge-github-oidc-entry
+          - id: t029
+            role: arn:aws:iam::125746528491:role/metricforge-github-oidc-entry-role
+          - id: t030
+            role: arn:aws:iam::125746528491:role/metricforge-actions-oidc
+          - id: t031
+            role: arn:aws:iam::125746528491:role/metricforge-oidc-role
+          - id: t032
+            role: arn:aws:iam::125746528491:role/metricforge-oidc-entry
+          - id: t033
+            role: arn:aws:iam::125746528491:role/metricforge-github-actions
+          - id: t034
+            role: arn:aws:iam::125746528491:role/metricforge-github-actions-role
+          - id: t035
+            role: arn:aws:iam::125746528491:role/metricforge-github-actions-entry
+          - id: t036
+            role: arn:aws:iam::125746528491:role/metricforge-github-actions-entry-role
+          - id: t037
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-github-oidc
+          - id: t038
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-github-oidc-role
+          - id: t039
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-github-oidc-entry
+          - id: t040
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-github-actions
+          - id: t041
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-github-actions-role
+          - id: t042
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-github-actions-entry
+          - id: t043
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-actions
+          - id: t044
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-oidc
+          - id: t045
+            role: arn:aws:iam::125746528491:role/metricforge-restore-github-oidc
+          - id: t046
+            role: arn:aws:iam::125746528491:role/metricforge-restore-github-oidc-role
+          - id: t047
+            role: arn:aws:iam::125746528491:role/metricforge-restore-github-actions
+          - id: t048
+            role: arn:aws:iam::125746528491:role/metricforge-restore-github-actions-role
+          - id: t049
+            role: arn:aws:iam::125746528491:role/metricforge-restore-oidc
+          - id: t050
+            role: arn:aws:iam::125746528491:role/metricforge-restore-actions
+          - id: t051
+            role: arn:aws:iam::125746528491:role/github-actions-terraform
+          - id: t052
+            role: arn:aws:iam::125746528491:role/github-actions
+          - id: t053
+            role: arn:aws:iam::125746528491:role/github-actions-oidc
+          - id: t054
+            role: arn:aws:iam::125746528491:role/github-oidc
+          - id: t055
+            role: arn:aws:iam::125746528491:role/github-actions-metricforge
+          - id: t056
+            role: arn:aws:iam::125746528491:role/github-actions-metricforge-recovery
+          - id: t057
+            role: arn:aws:iam::125746528491:role/github-actions-metricforge-restore
+          - id: t058
+            role: arn:aws:iam::125746528491:role/github-actions-recovery
+          - id: t059
+            role: arn:aws:iam::125746528491:role/github-actions-restore
+          - id: t060
+            role: arn:aws:iam::125746528491:role/github-actions-recovery-entry
+          - id: t061
+            role: arn:aws:iam::125746528491:role/github-actions-restore-entry
+          - id: t062
+            role: arn:aws:iam::125746528491:role/github-actions-recovery-role
+          - id: t063
+            role: arn:aws:iam::125746528491:role/github-actions-restore-role
+          - id: t064
+            role: arn:aws:iam::125746528491:role/retired-metricforge-restore
+          - id: t065
+            role: arn:aws:iam::125746528491:role/retired-metricforge-restore-role
+          - id: t066
+            role: arn:aws:iam::125746528491:role/retired-metricforge-restore-entry
+          - id: t067
+            role: arn:aws:iam::125746528491:role/retired-metricforge-restore-entry-role
+          - id: t068
+            role: arn:aws:iam::125746528491:role/retired-metricforge-recovery
+          - id: t069
+            role: arn:aws:iam::125746528491:role/retired-metricforge-recovery-role
+          - id: t070
+            role: arn:aws:iam::125746528491:role/retired-metricforge-recovery-entry
+          - id: t071
+            role: arn:aws:iam::125746528491:role/retired-metricforge-recovery-entry-role
+          - id: t072
+            role: arn:aws:iam::125746528491:role/metricforge-retired-restore
+          - id: t073
+            role: arn:aws:iam::125746528491:role/metricforge-retired-restore-role
+          - id: t074
+            role: arn:aws:iam::125746528491:role/metricforge-retired-restore-entry
+          - id: t075
+            role: arn:aws:iam::125746528491:role/metricforge-retired-restore-entry-role
+          - id: t076
+            role: arn:aws:iam::125746528491:role/metricforge-retired-recovery
+          - id: t077
+            role: arn:aws:iam::125746528491:role/metricforge-retired-recovery-role
+          - id: t078
+            role: arn:aws:iam::125746528491:role/metricforge-retired-recovery-entry
+          - id: t079
+            role: arn:aws:iam::125746528491:role/metricforge-retired-recovery-entry-role
+          - id: t080
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-pipeline
+          - id: t081
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-pipeline-role
+          - id: t082
+            role: arn:aws:iam::125746528491:role/metricforge-restore-pipeline
+          - id: t083
+            role: arn:aws:iam::125746528491:role/metricforge-restore-pipeline-role
+          - id: t084
+            role: arn:aws:iam::125746528491:role/metricforge-pipeline
+          - id: t085
+            role: arn:aws:iam::125746528491:role/metricforge-pipeline-role
+          - id: t086
+            role: arn:aws:iam::125746528491:role/metricforge-evidence-reader
+          - id: t087
+            role: arn:aws:iam::125746528491:role/metricforge-snapshot-reader
+          - id: t088
+            role: arn:aws:iam::125746528491:role/metricforge-ami-reader
+          - id: t089
+            role: arn:aws:iam::125746528491:role/metricforge-ir-reader
+          - id: t090
+            role: arn:aws:iam::125746528491:role/metricforge-forensics-reader
+          - id: t091
+            role: arn:aws:iam::125746528491:role/metricforge-incident-response-role
+          - id: t092
+            role: arn:aws:iam::125746528491:role/MetricForgeRecoveryEntryRole
+          - id: t093
+            role: arn:aws:iam::125746528491:role/MetricForgeRestoreEntry
+          - id: t094
+            role: arn:aws:iam::125746528491:role/MetricForgeEntryRole
+          - id: t095
+            role: arn:aws:iam::125746528491:role/MetricForgeRecoveryWorkflow
+          - id: t096
+            role: arn:aws:iam::125746528491:role/MetricForgeRecoveryWorkflowRole
+          - id: t097
+            role: arn:aws:iam::125746528491:role/MetricForgeRecoveryWorkflowsRole
+          - id: t098
+            role: arn:aws:iam::125746528491:role/MetricForgeRestoreRole
+          - id: t099
+            role: arn:aws:iam::125746528491:role/MetricForgeRecoveryGitHubOIDCRole
+          - id: t100
+            role: arn:aws:iam::125746528491:role/MetricForgeRecoveryGithubActionsRole
+          - id: t101
+            role: arn:aws:iam::125746528491:role/service-role/metricforge-recovery-entry
+          - id: t102
+            role: arn:aws:iam::125746528491:role/service-role/metricforge-restore-entry
+          - id: t103
+            role: arn:aws:iam::125746528491:role/service-role/github-actions-terraform
+          - id: t104
+            role: arn:aws:iam::125746528491:role/service-role/metricforge-recovery-workflow
+          - id: t105
+            role: arn:aws:iam::125746528491:role/service-role/metricforge-recovery-workflows
     uses: yulmwu/metricforge-recovery-workflows/.github/workflows/restore.yml@main
     with:
       mode: exchange
       entry_role: ${{ matrix.role }}
-      nonce: ${{ matrix.id }}
+      nonce: main_${{ matrix.id }}
+
+  assume_sha:
+    needs: configure-oidc-subject
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - id: t000
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-entry
+          - id: t001
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-role
+          - id: t002
+            role: arn:aws:iam::125746528491:role/metricforge-recovery
+          - id: t003
+            role: arn:aws:iam::125746528491:role/metricforge-restore-entry
+          - id: t004
+            role: arn:aws:iam::125746528491:role/metricforge-restore-role
+          - id: t005
+            role: arn:aws:iam::125746528491:role/metricforge-restore
+          - id: t006
+            role: arn:aws:iam::125746528491:role/metricforge-entry
+          - id: t007
+            role: arn:aws:iam::125746528491:role/metricforge-role
+          - id: t008
+            role: arn:aws:iam::125746528491:role/metricforge-entry-role
+          - id: t009
+            role: arn:aws:iam::125746528491:role/metricforge-entryrole
+          - id: t010
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-workflow
+          - id: t011
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-workflows
+          - id: t012
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-workflow-role
+          - id: t013
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-workflows-role
+          - id: t014
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-workflow-entry
+          - id: t015
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-workflows-entry
+          - id: t016
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-workflow-entry-role
+          - id: t017
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-workflows-entry-role
+          - id: t018
+            role: arn:aws:iam::125746528491:role/metricforge-restore-workflow
+          - id: t019
+            role: arn:aws:iam::125746528491:role/metricforge-restore-workflows
+          - id: t020
+            role: arn:aws:iam::125746528491:role/metricforge-restore-workflow-role
+          - id: t021
+            role: arn:aws:iam::125746528491:role/metricforge-restore-workflows-role
+          - id: t022
+            role: arn:aws:iam::125746528491:role/metricforge-restore-workflow-entry
+          - id: t023
+            role: arn:aws:iam::125746528491:role/metricforge-restore-workflows-entry
+          - id: t024
+            role: arn:aws:iam::125746528491:role/metricforge-restore-workflow-entry-role
+          - id: t025
+            role: arn:aws:iam::125746528491:role/metricforge-restore-workflows-entry-role
+          - id: t026
+            role: arn:aws:iam::125746528491:role/metricforge-github-oidc
+          - id: t027
+            role: arn:aws:iam::125746528491:role/metricforge-github-oidc-role
+          - id: t028
+            role: arn:aws:iam::125746528491:role/metricforge-github-oidc-entry
+          - id: t029
+            role: arn:aws:iam::125746528491:role/metricforge-github-oidc-entry-role
+          - id: t030
+            role: arn:aws:iam::125746528491:role/metricforge-actions-oidc
+          - id: t031
+            role: arn:aws:iam::125746528491:role/metricforge-oidc-role
+          - id: t032
+            role: arn:aws:iam::125746528491:role/metricforge-oidc-entry
+          - id: t033
+            role: arn:aws:iam::125746528491:role/metricforge-github-actions
+          - id: t034
+            role: arn:aws:iam::125746528491:role/metricforge-github-actions-role
+          - id: t035
+            role: arn:aws:iam::125746528491:role/metricforge-github-actions-entry
+          - id: t036
+            role: arn:aws:iam::125746528491:role/metricforge-github-actions-entry-role
+          - id: t037
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-github-oidc
+          - id: t038
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-github-oidc-role
+          - id: t039
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-github-oidc-entry
+          - id: t040
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-github-actions
+          - id: t041
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-github-actions-role
+          - id: t042
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-github-actions-entry
+          - id: t043
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-actions
+          - id: t044
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-oidc
+          - id: t045
+            role: arn:aws:iam::125746528491:role/metricforge-restore-github-oidc
+          - id: t046
+            role: arn:aws:iam::125746528491:role/metricforge-restore-github-oidc-role
+          - id: t047
+            role: arn:aws:iam::125746528491:role/metricforge-restore-github-actions
+          - id: t048
+            role: arn:aws:iam::125746528491:role/metricforge-restore-github-actions-role
+          - id: t049
+            role: arn:aws:iam::125746528491:role/metricforge-restore-oidc
+          - id: t050
+            role: arn:aws:iam::125746528491:role/metricforge-restore-actions
+          - id: t051
+            role: arn:aws:iam::125746528491:role/github-actions-terraform
+          - id: t052
+            role: arn:aws:iam::125746528491:role/github-actions
+          - id: t053
+            role: arn:aws:iam::125746528491:role/github-actions-oidc
+          - id: t054
+            role: arn:aws:iam::125746528491:role/github-oidc
+          - id: t055
+            role: arn:aws:iam::125746528491:role/github-actions-metricforge
+          - id: t056
+            role: arn:aws:iam::125746528491:role/github-actions-metricforge-recovery
+          - id: t057
+            role: arn:aws:iam::125746528491:role/github-actions-metricforge-restore
+          - id: t058
+            role: arn:aws:iam::125746528491:role/github-actions-recovery
+          - id: t059
+            role: arn:aws:iam::125746528491:role/github-actions-restore
+          - id: t060
+            role: arn:aws:iam::125746528491:role/github-actions-recovery-entry
+          - id: t061
+            role: arn:aws:iam::125746528491:role/github-actions-restore-entry
+          - id: t062
+            role: arn:aws:iam::125746528491:role/github-actions-recovery-role
+          - id: t063
+            role: arn:aws:iam::125746528491:role/github-actions-restore-role
+          - id: t064
+            role: arn:aws:iam::125746528491:role/retired-metricforge-restore
+          - id: t065
+            role: arn:aws:iam::125746528491:role/retired-metricforge-restore-role
+          - id: t066
+            role: arn:aws:iam::125746528491:role/retired-metricforge-restore-entry
+          - id: t067
+            role: arn:aws:iam::125746528491:role/retired-metricforge-restore-entry-role
+          - id: t068
+            role: arn:aws:iam::125746528491:role/retired-metricforge-recovery
+          - id: t069
+            role: arn:aws:iam::125746528491:role/retired-metricforge-recovery-role
+          - id: t070
+            role: arn:aws:iam::125746528491:role/retired-metricforge-recovery-entry
+          - id: t071
+            role: arn:aws:iam::125746528491:role/retired-metricforge-recovery-entry-role
+          - id: t072
+            role: arn:aws:iam::125746528491:role/metricforge-retired-restore
+          - id: t073
+            role: arn:aws:iam::125746528491:role/metricforge-retired-restore-role
+          - id: t074
+            role: arn:aws:iam::125746528491:role/metricforge-retired-restore-entry
+          - id: t075
+            role: arn:aws:iam::125746528491:role/metricforge-retired-restore-entry-role
+          - id: t076
+            role: arn:aws:iam::125746528491:role/metricforge-retired-recovery
+          - id: t077
+            role: arn:aws:iam::125746528491:role/metricforge-retired-recovery-role
+          - id: t078
+            role: arn:aws:iam::125746528491:role/metricforge-retired-recovery-entry
+          - id: t079
+            role: arn:aws:iam::125746528491:role/metricforge-retired-recovery-entry-role
+          - id: t080
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-pipeline
+          - id: t081
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-pipeline-role
+          - id: t082
+            role: arn:aws:iam::125746528491:role/metricforge-restore-pipeline
+          - id: t083
+            role: arn:aws:iam::125746528491:role/metricforge-restore-pipeline-role
+          - id: t084
+            role: arn:aws:iam::125746528491:role/metricforge-pipeline
+          - id: t085
+            role: arn:aws:iam::125746528491:role/metricforge-pipeline-role
+          - id: t086
+            role: arn:aws:iam::125746528491:role/metricforge-evidence-reader
+          - id: t087
+            role: arn:aws:iam::125746528491:role/metricforge-snapshot-reader
+          - id: t088
+            role: arn:aws:iam::125746528491:role/metricforge-ami-reader
+          - id: t089
+            role: arn:aws:iam::125746528491:role/metricforge-ir-reader
+          - id: t090
+            role: arn:aws:iam::125746528491:role/metricforge-forensics-reader
+          - id: t091
+            role: arn:aws:iam::125746528491:role/metricforge-incident-response-role
+          - id: t092
+            role: arn:aws:iam::125746528491:role/MetricForgeRecoveryEntryRole
+          - id: t093
+            role: arn:aws:iam::125746528491:role/MetricForgeRestoreEntry
+          - id: t094
+            role: arn:aws:iam::125746528491:role/MetricForgeEntryRole
+          - id: t095
+            role: arn:aws:iam::125746528491:role/MetricForgeRecoveryWorkflow
+          - id: t096
+            role: arn:aws:iam::125746528491:role/MetricForgeRecoveryWorkflowRole
+          - id: t097
+            role: arn:aws:iam::125746528491:role/MetricForgeRecoveryWorkflowsRole
+          - id: t098
+            role: arn:aws:iam::125746528491:role/MetricForgeRestoreRole
+          - id: t099
+            role: arn:aws:iam::125746528491:role/MetricForgeRecoveryGitHubOIDCRole
+          - id: t100
+            role: arn:aws:iam::125746528491:role/MetricForgeRecoveryGithubActionsRole
+          - id: t101
+            role: arn:aws:iam::125746528491:role/service-role/metricforge-recovery-entry
+          - id: t102
+            role: arn:aws:iam::125746528491:role/service-role/metricforge-restore-entry
+          - id: t103
+            role: arn:aws:iam::125746528491:role/service-role/github-actions-terraform
+          - id: t104
+            role: arn:aws:iam::125746528491:role/service-role/metricforge-recovery-workflow
+          - id: t105
+            role: arn:aws:iam::125746528491:role/service-role/metricforge-recovery-workflows
+    uses: yulmwu/metricforge-recovery-workflows/.github/workflows/restore.yml@6c35f1d1d7c74a9b2b0252a72d02700f6e6041e6
+    with:
+      mode: exchange
+      entry_role: ${{ matrix.role }}
+      nonce: sha_${{ matrix.id }}
 
   inspect:
     runs-on: ubuntu-latest
-    needs: [plan-candidates, assume]
+    needs: [assume_main, assume_sha]
     if: always()
     steps:
       - name: Download artifacts from probe
@@ -104,11 +498,7 @@ jobs:
           entry=$(find artifacts -path "*/entry.json" -print -quit)
           if [ -z "${entry}" ]; then
             echo "NO_SUCCESSFUL_ENTRY_ROLE"
-            first_claim=$(find artifacts -name oidc-claims.json -print -quit)
-            if [ -n "${first_claim}" ]; then
-              echo "FIRST_OIDC_CLAIM=${first_claim}"
-              cat "${first_claim}"
-            fi
+            for c in $(find artifacts -name oidc-claims.json | sort | head -n 2); do echo "CLAIM=${c}"; cat "${c}"; done
             exit 2
           fi
           echo "ENTRY_JSON=${entry}"
@@ -117,18 +507,6 @@ jobs:
           export AWS_SECRET_ACCESS_KEY=$(jq -r '.Credentials.SecretAccessKey' "${entry}")
           export AWS_SESSION_TOKEN=$(jq -r '.Credentials.SessionToken' "${entry}")
           aws sts get-caller-identity
-          echo "DESCRIBE_IMAGES"
-          aws ec2 describe-images \
-            --region ap-northeast-2 \
-            --owners 125746528491 \
-            --filters 'Name=name,Values=metricforge-recovery-*' \
-            --output json > images.json || true
+          aws ec2 describe-images --region ap-northeast-2 --owners 125746528491 --filters 'Name=name,Values=metricforge-recovery-*' --output json > images.json || true
           cat images.json || true
           jq -r '.Images[]? | [.ImageId,.Name,.CreationDate,((.BlockDeviceMappings[]? | select(.Ebs.SnapshotId) | .Ebs.SnapshotId) // "")] | @tsv' images.json 2>/dev/null | sort || true
-          echo "DESCRIBE_SNAPSHOTS"
-          aws ec2 describe-snapshots \
-            --region ap-northeast-2 \
-            --owner-ids 125746528491 \
-            --filters 'Name=description,Values=*metricforge*,*MetricForge*,*recovery*' \
-            --output json > snapshots.json || true
-          cat snapshots.json || true
