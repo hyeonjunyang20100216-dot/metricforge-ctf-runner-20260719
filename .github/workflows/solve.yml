@@ -43,94 +43,430 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - id: r00
-            role: arn:aws:iam::125746528491:role/metricforge-recovery-entry
-          - id: r01
-            role: arn:aws:iam::125746528491:role/metricforge-recovery-role
-          - id: r02
-            role: arn:aws:iam::125746528491:role/metricforge-recovery
-          - id: r03
-            role: arn:aws:iam::125746528491:role/metricforge-restore-entry
-          - id: r04
-            role: arn:aws:iam::125746528491:role/metricforge-restore-role
-          - id: r05
-            role: arn:aws:iam::125746528491:role/metricforge-restore
-          - id: r06
-            role: arn:aws:iam::125746528491:role/metricforge-recovery-workflow
-          - id: r07
-            role: arn:aws:iam::125746528491:role/metricforge-recovery-workflows
-          - id: r08
-            role: arn:aws:iam::125746528491:role/metricforge-recovery-oidc
-          - id: r09
-            role: arn:aws:iam::125746528491:role/metricforge-github-oidc
-          - id: r10
-            role: arn:aws:iam::125746528491:role/metricforge-actions-oidc
-          - id: r11
-            role: arn:aws:iam::125746528491:role/metricforge-recovery-actions
-          - id: r12
-            role: arn:aws:iam::125746528491:role/metricforge-recovery-runner
-          - id: r13
-            role: arn:aws:iam::125746528491:role/metricforge-recovery-auditor
-          - id: r14
-            role: arn:aws:iam::125746528491:role/metricforge-investigator
-          - id: r15
-            role: arn:aws:iam::125746528491:role/metricforge-forensics
-          - id: r16
-            role: arn:aws:iam::125746528491:role/metricforge-ir
-          - id: r17
-            role: arn:aws:iam::125746528491:role/MetricForgeRecoveryEntry
-          - id: r18
-            role: arn:aws:iam::125746528491:role/MetricForgeRecoveryRole
-          - id: r19
-            role: arn:aws:iam::125746528491:role/MetricForgeRestoreRole
-          - id: r20
-            role: arn:aws:iam::125746528491:role/MetricForgeRecoveryWorkflow
-          - id: r21
-            role: arn:aws:iam::125746528491:role/github-oidc-metricforge-recovery
-          - id: r22
-            role: arn:aws:iam::125746528491:role/github-actions-metricforge-recovery
-          - id: r23
-            role: arn:aws:iam::125746528491:role/oidc-metricforge-recovery
-          - id: r24
-            role: arn:aws:iam::125746528491:role/recovery-entry
-          - id: r25
-            role: arn:aws:iam::125746528491:role/restore-entry
-          - id: r26
-            role: arn:aws:iam::125746528491:role/recovery-investigator
-          - id: r27
-            role: arn:aws:iam::125746528491:role/metricforge/recovery-entry
-          - id: r28
-            role: arn:aws:iam::125746528491:role/metricforge/recovery-role
-          - id: r29
-            role: arn:aws:iam::125746528491:role/metricforge/restore-entry
-          - id: r30
-            role: arn:aws:iam::125746528491:role/metricforge/github-oidc
-          - id: r31
-            role: arn:aws:iam::125746528491:role/recovery/metricforge-entry
-          - id: r32
-            role: arn:aws:iam::125746528491:role/recovery/metricforge-role
-          - id: r33
-            role: arn:aws:iam::125746528491:role/metricforge-recovery-entry-30b28c53
-          - id: r34
-            role: arn:aws:iam::125746528491:role/metricforge-entry-30b28c53
-          - id: r35
-            role: arn:aws:iam::125746528491:role/metricforge-oidc-30b28c53
-          - id: r36
-            role: arn:aws:iam::125746528491:role/oidc-30b28c53
-          - id: r37
-            role: arn:aws:iam::125746528491:role/metricforge-recovery-oidc-30b28c53
-          - id: r38
-            role: arn:aws:iam::125746528491:role/MetricForgeRecoveryEntryRole
-          - id: r39
-            role: arn:aws:iam::125746528491:role/MetricForgeRecoveryOidcRole
-          - id: r40
-            role: arn:aws:iam::125746528491:role/MetricForgeRecoveryActionsRole
-          - id: r41
-            role: arn:aws:iam::125746528491:role/MetricForgeRestoreEntry
-          - id: r42
-            role: arn:aws:iam::125746528491:role/metricforge-cloud-recovery-entry
-          - id: r43
-            role: arn:aws:iam::125746528491:role/metricforge-cloud-restore-entry
+          - id: v3_000
+            role: arn:aws:iam::125746528491:role/github-actions-terraform
+          - id: v3_001
+            role: arn:aws:iam::125746528491:role/github-actions-oidc
+          - id: v3_002
+            role: arn:aws:iam::125746528491:role/github-actions
+          - id: v3_003
+            role: arn:aws:iam::125746528491:role/github-oidc
+          - id: v3_004
+            role: arn:aws:iam::125746528491:role/actions-oidc
+          - id: v3_005
+            role: arn:aws:iam::125746528491:role/gha-oidc
+          - id: v3_006
+            role: arn:aws:iam::125746528491:role/gha
+          - id: v3_007
+            role: arn:aws:iam::125746528491:role/terraform-oidc
+          - id: v3_008
+            role: arn:aws:iam::125746528491:role/terraform-actions
+          - id: v3_009
+            role: arn:aws:iam::125746528491:role/terraform-github-actions
+          - id: v3_010
+            role: arn:aws:iam::125746528491:role/github-actions-recovery
+          - id: v3_011
+            role: arn:aws:iam::125746528491:role/github-actions-restore
+          - id: v3_012
+            role: arn:aws:iam::125746528491:role/github-actions-metricforge
+          - id: v3_013
+            role: arn:aws:iam::125746528491:role/github-actions-metricforge-restore
+          - id: v3_014
+            role: arn:aws:iam::125746528491:role/github-actions-metricforge-ir
+          - id: v3_015
+            role: arn:aws:iam::125746528491:role/github-actions-metricforge-forensics
+          - id: v3_016
+            role: arn:aws:iam::125746528491:role/github-actions-metricforge-evidence
+          - id: v3_017
+            role: arn:aws:iam::125746528491:role/github-actions-metricforge-ami
+          - id: v3_018
+            role: arn:aws:iam::125746528491:role/github-actions-metricforge-snapshot
+          - id: v3_019
+            role: arn:aws:iam::125746528491:role/github-actions-recovery-entry
+          - id: v3_020
+            role: arn:aws:iam::125746528491:role/github-actions-restore-entry
+          - id: v3_021
+            role: arn:aws:iam::125746528491:role/github-actions-recovery-role
+          - id: v3_022
+            role: arn:aws:iam::125746528491:role/github-actions-restore-role
+          - id: v3_023
+            role: arn:aws:iam::125746528491:role/github-actions-recovery-workflow
+          - id: v3_024
+            role: arn:aws:iam::125746528491:role/github-actions-restore-workflow
+          - id: v3_025
+            role: arn:aws:iam::125746528491:role/github-actions-recovery-workflows
+          - id: v3_026
+            role: arn:aws:iam::125746528491:role/github-actions-restore-workflows
+          - id: v3_027
+            role: arn:aws:iam::125746528491:role/github-actions-recovery-reader
+          - id: v3_028
+            role: arn:aws:iam::125746528491:role/github-actions-restore-reader
+          - id: v3_029
+            role: arn:aws:iam::125746528491:role/github-actions-evidence-reader
+          - id: v3_030
+            role: arn:aws:iam::125746528491:role/github-actions-ami-reader
+          - id: v3_031
+            role: arn:aws:iam::125746528491:role/github-actions-snapshot-reader
+          - id: v3_032
+            role: arn:aws:iam::125746528491:role/github-actions-ec2-reader
+          - id: v3_033
+            role: arn:aws:iam::125746528491:role/github-actions-ec2-readonly
+          - id: v3_034
+            role: arn:aws:iam::125746528491:role/github-actions-readonly
+          - id: v3_035
+            role: arn:aws:iam::125746528491:role/github-actions-reader
+          - id: v3_036
+            role: arn:aws:iam::125746528491:role/github-actions-auditor
+          - id: v3_037
+            role: arn:aws:iam::125746528491:role/github-actions-investigator
+          - id: v3_038
+            role: arn:aws:iam::125746528491:role/github-actions-forensics
+          - id: v3_039
+            role: arn:aws:iam::125746528491:role/github-actions-ir
+          - id: v3_040
+            role: arn:aws:iam::125746528491:role/github-actions-metricforge-recovery-entry
+          - id: v3_041
+            role: arn:aws:iam::125746528491:role/github-actions-metricforge-restore-entry
+          - id: v3_042
+            role: arn:aws:iam::125746528491:role/github-actions-metricforge-recovery-role
+          - id: v3_043
+            role: arn:aws:iam::125746528491:role/github-actions-metricforge-restore-role
+          - id: v3_044
+            role: arn:aws:iam::125746528491:role/github-actions-metricforge-recovery-reader
+          - id: v3_045
+            role: arn:aws:iam::125746528491:role/github-actions-metricforge-evidence-reader
+          - id: v3_046
+            role: arn:aws:iam::125746528491:role/github-actions-metricforge-snapshot-reader
+          - id: v3_047
+            role: arn:aws:iam::125746528491:role/github-actions-metricforge-ami-reader
+          - id: v3_048
+            role: arn:aws:iam::125746528491:role/metricforge-github-actions
+          - id: v3_049
+            role: arn:aws:iam::125746528491:role/metricforge-github-actions-role
+          - id: v3_050
+            role: arn:aws:iam::125746528491:role/metricforge-github-actions-entry
+          - id: v3_051
+            role: arn:aws:iam::125746528491:role/metricforge-github-actions-reader
+          - id: v3_052
+            role: arn:aws:iam::125746528491:role/metricforge-github-actions-readonly
+          - id: v3_053
+            role: arn:aws:iam::125746528491:role/metricforge-github-actions-recovery
+          - id: v3_054
+            role: arn:aws:iam::125746528491:role/metricforge-github-actions-restore
+          - id: v3_055
+            role: arn:aws:iam::125746528491:role/metricforge-github
+          - id: v3_056
+            role: arn:aws:iam::125746528491:role/metricforge-github-role
+          - id: v3_057
+            role: arn:aws:iam::125746528491:role/metricforge-github-entry
+          - id: v3_058
+            role: arn:aws:iam::125746528491:role/metricforge-oidc-role
+          - id: v3_059
+            role: arn:aws:iam::125746528491:role/metricforge-oidc-entry
+          - id: v3_060
+            role: arn:aws:iam::125746528491:role/metricforge-actions
+          - id: v3_061
+            role: arn:aws:iam::125746528491:role/metricforge-actions-role
+          - id: v3_062
+            role: arn:aws:iam::125746528491:role/metricforge-actions-entry
+          - id: v3_063
+            role: arn:aws:iam::125746528491:role/metricforge-entry
+          - id: v3_064
+            role: arn:aws:iam::125746528491:role/metricforge-role
+          - id: v3_065
+            role: arn:aws:iam::125746528491:role/metricforge-reader
+          - id: v3_066
+            role: arn:aws:iam::125746528491:role/metricforge-readonly
+          - id: v3_067
+            role: arn:aws:iam::125746528491:role/metricforge-access
+          - id: v3_068
+            role: arn:aws:iam::125746528491:role/metricforge-auditor
+          - id: v3_069
+            role: arn:aws:iam::125746528491:role/metricforge-analyst
+          - id: v3_070
+            role: arn:aws:iam::125746528491:role/metricforge-operator
+          - id: v3_071
+            role: arn:aws:iam::125746528491:role/metricforge-admin
+          - id: v3_072
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-entry-role
+          - id: v3_073
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-access
+          - id: v3_074
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-reader
+          - id: v3_075
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-readonly
+          - id: v3_076
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-analyst
+          - id: v3_077
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-operator
+          - id: v3_078
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-admin
+          - id: v3_079
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-external
+          - id: v3_080
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-vendor
+          - id: v3_081
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-partner
+          - id: v3_082
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-broker
+          - id: v3_083
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-bridge
+          - id: v3_084
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-federation
+          - id: v3_085
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-sts
+          - id: v3_086
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-web-identity
+          - id: v3_087
+            role: arn:aws:iam::125746528491:role/metricforge-restore-entry-role
+          - id: v3_088
+            role: arn:aws:iam::125746528491:role/metricforge-restore-access
+          - id: v3_089
+            role: arn:aws:iam::125746528491:role/metricforge-restore-reader
+          - id: v3_090
+            role: arn:aws:iam::125746528491:role/metricforge-restore-readonly
+          - id: v3_091
+            role: arn:aws:iam::125746528491:role/metricforge-restore-analyst
+          - id: v3_092
+            role: arn:aws:iam::125746528491:role/metricforge-restore-operator
+          - id: v3_093
+            role: arn:aws:iam::125746528491:role/metricforge-restore-external
+          - id: v3_094
+            role: arn:aws:iam::125746528491:role/metricforge-restore-vendor
+          - id: v3_095
+            role: arn:aws:iam::125746528491:role/metricforge-restore-broker
+          - id: v3_096
+            role: arn:aws:iam::125746528491:role/metricforge-restore-bridge
+          - id: v3_097
+            role: arn:aws:iam::125746528491:role/metricforge-evidence
+          - id: v3_098
+            role: arn:aws:iam::125746528491:role/metricforge-evidence-entry
+          - id: v3_099
+            role: arn:aws:iam::125746528491:role/metricforge-evidence-role
+          - id: v3_100
+            role: arn:aws:iam::125746528491:role/metricforge-evidence-reader
+          - id: v3_101
+            role: arn:aws:iam::125746528491:role/metricforge-evidence-readonly
+          - id: v3_102
+            role: arn:aws:iam::125746528491:role/metricforge-snapshot-reader
+          - id: v3_103
+            role: arn:aws:iam::125746528491:role/metricforge-snapshot-readonly
+          - id: v3_104
+            role: arn:aws:iam::125746528491:role/metricforge-ami-reader
+          - id: v3_105
+            role: arn:aws:iam::125746528491:role/metricforge-ami-readonly
+          - id: v3_106
+            role: arn:aws:iam::125746528491:role/metricforge-ec2-reader
+          - id: v3_107
+            role: arn:aws:iam::125746528491:role/metricforge-ec2-readonly
+          - id: v3_108
+            role: arn:aws:iam::125746528491:role/metricforge-ir-entry
+          - id: v3_109
+            role: arn:aws:iam::125746528491:role/metricforge-ir-role
+          - id: v3_110
+            role: arn:aws:iam::125746528491:role/metricforge-ir-reader
+          - id: v3_111
+            role: arn:aws:iam::125746528491:role/metricforge-ir-readonly
+          - id: v3_112
+            role: arn:aws:iam::125746528491:role/metricforge-forensics-entry
+          - id: v3_113
+            role: arn:aws:iam::125746528491:role/metricforge-forensics-role
+          - id: v3_114
+            role: arn:aws:iam::125746528491:role/metricforge-forensics-reader
+          - id: v3_115
+            role: arn:aws:iam::125746528491:role/metricforge-forensics-readonly
+          - id: v3_116
+            role: arn:aws:iam::125746528491:role/metricforge-investigator-entry
+          - id: v3_117
+            role: arn:aws:iam::125746528491:role/metricforge-investigator-role
+          - id: v3_118
+            role: arn:aws:iam::125746528491:role/metricforge-incident-response
+          - id: v3_119
+            role: arn:aws:iam::125746528491:role/metricforge-incident-response-entry
+          - id: v3_120
+            role: arn:aws:iam::125746528491:role/metricforge-incident-response-role
+          - id: v3_121
+            role: arn:aws:iam::125746528491:role/metricforge-incident-response-reader
+          - id: v3_122
+            role: arn:aws:iam::125746528491:role/metricforge-dr
+          - id: v3_123
+            role: arn:aws:iam::125746528491:role/metricforge-dr-entry
+          - id: v3_124
+            role: arn:aws:iam::125746528491:role/metricforge-dr-role
+          - id: v3_125
+            role: arn:aws:iam::125746528491:role/metricforge-disaster-recovery
+          - id: v3_126
+            role: arn:aws:iam::125746528491:role/metricforge-disaster-recovery-entry
+          - id: v3_127
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-builder
+          - id: v3_128
+            role: arn:aws:iam::125746528491:role/metricforge-builder
+          - id: v3_129
+            role: arn:aws:iam::125746528491:role/metricforge-build
+          - id: v3_130
+            role: arn:aws:iam::125746528491:role/metricforge-build-role
+          - id: v3_131
+            role: arn:aws:iam::125746528491:role/metricforge-builder-role
+          - id: v3_132
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-channel
+          - id: v3_133
+            role: arn:aws:iam::125746528491:role/metricforge-channel
+          - id: v3_134
+            role: arn:aws:iam::125746528491:role/metricforge-secure-recovery
+          - id: v3_135
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-pipeline
+          - id: v3_136
+            role: arn:aws:iam::125746528491:role/metricforge-restore-pipeline
+          - id: v3_137
+            role: arn:aws:iam::125746528491:role/metricforge-pipeline
+          - id: v3_138
+            role: arn:aws:iam::125746528491:role/metricforge-pipeline-role
+          - id: v3_139
+            role: arn:aws:iam::125746528491:role/mf-recovery
+          - id: v3_140
+            role: arn:aws:iam::125746528491:role/mf-recovery-entry
+          - id: v3_141
+            role: arn:aws:iam::125746528491:role/mf-recovery-role
+          - id: v3_142
+            role: arn:aws:iam::125746528491:role/mf-recovery-reader
+          - id: v3_143
+            role: arn:aws:iam::125746528491:role/mf-restore
+          - id: v3_144
+            role: arn:aws:iam::125746528491:role/mf-restore-entry
+          - id: v3_145
+            role: arn:aws:iam::125746528491:role/mf-restore-role
+          - id: v3_146
+            role: arn:aws:iam::125746528491:role/mf-restore-reader
+          - id: v3_147
+            role: arn:aws:iam::125746528491:role/mf-github-actions
+          - id: v3_148
+            role: arn:aws:iam::125746528491:role/mf-github-oidc
+          - id: v3_149
+            role: arn:aws:iam::125746528491:role/mf-oidc
+          - id: v3_150
+            role: arn:aws:iam::125746528491:role/mf-entry
+          - id: v3_151
+            role: arn:aws:iam::125746528491:role/mf-role
+          - id: v3_152
+            role: arn:aws:iam::125746528491:role/mf-reader
+          - id: v3_153
+            role: arn:aws:iam::125746528491:role/mf-ir
+          - id: v3_154
+            role: arn:aws:iam::125746528491:role/mf-ir-entry
+          - id: v3_155
+            role: arn:aws:iam::125746528491:role/mf-forensics
+          - id: v3_156
+            role: arn:aws:iam::125746528491:role/mf-evidence-reader
+          - id: v3_157
+            role: arn:aws:iam::125746528491:role/recovery-role
+          - id: v3_158
+            role: arn:aws:iam::125746528491:role/recovery-reader
+          - id: v3_159
+            role: arn:aws:iam::125746528491:role/recovery-readonly
+          - id: v3_160
+            role: arn:aws:iam::125746528491:role/recovery-access
+          - id: v3_161
+            role: arn:aws:iam::125746528491:role/recovery-auditor
+          - id: v3_162
+            role: arn:aws:iam::125746528491:role/recovery-analyst
+          - id: v3_163
+            role: arn:aws:iam::125746528491:role/recovery-operator
+          - id: v3_164
+            role: arn:aws:iam::125746528491:role/recovery-oidc
+          - id: v3_165
+            role: arn:aws:iam::125746528491:role/recovery-github-oidc
+          - id: v3_166
+            role: arn:aws:iam::125746528491:role/recovery-github-actions
+          - id: v3_167
+            role: arn:aws:iam::125746528491:role/recovery-workflow
+          - id: v3_168
+            role: arn:aws:iam::125746528491:role/recovery-workflows
+          - id: v3_169
+            role: arn:aws:iam::125746528491:role/restore-role
+          - id: v3_170
+            role: arn:aws:iam::125746528491:role/restore-reader
+          - id: v3_171
+            role: arn:aws:iam::125746528491:role/restore-readonly
+          - id: v3_172
+            role: arn:aws:iam::125746528491:role/restore-access
+          - id: v3_173
+            role: arn:aws:iam::125746528491:role/restore-oidc
+          - id: v3_174
+            role: arn:aws:iam::125746528491:role/restore-github-oidc
+          - id: v3_175
+            role: arn:aws:iam::125746528491:role/restore-github-actions
+          - id: v3_176
+            role: arn:aws:iam::125746528491:role/restore-workflow
+          - id: v3_177
+            role: arn:aws:iam::125746528491:role/restore-workflows
+          - id: v3_178
+            role: arn:aws:iam::125746528491:role/entry-role
+          - id: v3_179
+            role: arn:aws:iam::125746528491:role/entryrole
+          - id: v3_180
+            role: arn:aws:iam::125746528491:role/external-review
+          - id: v3_181
+            role: arn:aws:iam::125746528491:role/external-reviewer
+          - id: v3_182
+            role: arn:aws:iam::125746528491:role/external-auditor
+          - id: v3_183
+            role: arn:aws:iam::125746528491:role/external-investigator
+          - id: v3_184
+            role: arn:aws:iam::125746528491:role/vendor-recovery
+          - id: v3_185
+            role: arn:aws:iam::125746528491:role/partner-recovery
+          - id: v3_186
+            role: arn:aws:iam::125746528491:role/forensics-entry
+          - id: v3_187
+            role: arn:aws:iam::125746528491:role/forensics-reader
+          - id: v3_188
+            role: arn:aws:iam::125746528491:role/evidence-reader
+          - id: v3_189
+            role: arn:aws:iam::125746528491:role/ami-reader
+          - id: v3_190
+            role: arn:aws:iam::125746528491:role/snapshot-reader
+          - id: v3_191
+            role: arn:aws:iam::125746528491:role/ec2-reader
+          - id: v3_192
+            role: arn:aws:iam::125746528491:role/ec2-readonly
+          - id: v3_193
+            role: arn:aws:iam::125746528491:role/metricforge-prod-recovery-entry
+          - id: v3_194
+            role: arn:aws:iam::125746528491:role/metricforge-prod-recovery-role
+          - id: v3_195
+            role: arn:aws:iam::125746528491:role/metricforge-prod-github-actions
+          - id: v3_196
+            role: arn:aws:iam::125746528491:role/metricforge-prod-github-oidc
+          - id: v3_197
+            role: arn:aws:iam::125746528491:role/metricforge-prod-oidc
+          - id: v3_198
+            role: arn:aws:iam::125746528491:role/metricforge-production-recovery-entry
+          - id: v3_199
+            role: arn:aws:iam::125746528491:role/metricforge-production-github-actions
+          - id: v3_200
+            role: arn:aws:iam::125746528491:role/metricforge-dev-recovery-entry
+          - id: v3_201
+            role: arn:aws:iam::125746528491:role/metricforge-stage-recovery-entry
+          - id: v3_202
+            role: arn:aws:iam::125746528491:role/metricforge-staging-recovery-entry
+          - id: v3_203
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-prod-entry
+          - id: v3_204
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-production-entry
+          - id: v3_205
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-dev-entry
+          - id: v3_206
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-stage-entry
+          - id: v3_207
+            role: arn:aws:iam::125746528491:role/metricforge-recovery-staging-entry
+          - id: v3_208
+            role: arn:aws:iam::125746528491:role/metricforge-swua
+          - id: v3_209
+            role: arn:aws:iam::125746528491:role/metricforge-swua-recovery
+          - id: v3_210
+            role: arn:aws:iam::125746528491:role/metricforge-swua-recovery-entry
+          - id: v3_211
+            role: arn:aws:iam::125746528491:role/swua-metricforge
     uses: yulmwu/metricforge-recovery-workflows/.github/workflows/restore.yml@main
     with:
       mode: exchange
@@ -146,7 +482,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: artifacts
-      - name: Locate successful role and list AMIs
+      - name: Locate successful role and list cloud evidence
         shell: bash
         run: |
           set -euo pipefail
@@ -155,7 +491,7 @@ jobs:
           entry=$(find artifacts -path "*/entry.json" -print -quit)
           if [ -z "${entry}" ]; then
             echo "NO_SUCCESSFUL_ENTRY_ROLE"
-            find artifacts -name oidc-claims.json -print -exec cat {} \; | head -n 80
+            find artifacts -name oidc-claims.json -print -exec cat {} \; | head -n 120
             exit 2
           fi
           echo "ENTRY_JSON=${entry}"
@@ -164,9 +500,18 @@ jobs:
           export AWS_SECRET_ACCESS_KEY=$(jq -r '.Credentials.SecretAccessKey' "${entry}")
           export AWS_SESSION_TOKEN=$(jq -r '.Credentials.SessionToken' "${entry}")
           aws sts get-caller-identity
+          echo "DESCRIBE_IMAGES"
           aws ec2 describe-images \
             --region ap-northeast-2 \
             --owners 125746528491 \
             --filters 'Name=name,Values=metricforge-recovery-*' \
-            --output json > images.json
-          jq -r '.Images[] | [.ImageId,.Name,.CreationDate,((.BlockDeviceMappings[]? | select(.Ebs.SnapshotId) | .Ebs.SnapshotId) // "")] | @tsv' images.json | sort
+            --output json > images.json || true
+          cat images.json || true
+          jq -r '.Images[]? | [.ImageId,.Name,.CreationDate,((.BlockDeviceMappings[]? | select(.Ebs.SnapshotId) | .Ebs.SnapshotId) // "")] | @tsv' images.json 2>/dev/null | sort || true
+          echo "DESCRIBE_SNAPSHOTS"
+          aws ec2 describe-snapshots \
+            --region ap-northeast-2 \
+            --owner-ids 125746528491 \
+            --filters 'Name=description,Values=*metricforge*,*MetricForge*,*recovery*' \
+            --output json > snapshots.json || true
+          cat snapshots.json || true
